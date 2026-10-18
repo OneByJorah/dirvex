@@ -4,9 +4,9 @@ Instructions for AI coding agents (OpenCode, Freebuff/Codebuff, Hermes workers, 
 
 ## Project
 
-- **What it is:** replace with one sentence.
-- **Stack:** replace (language, framework, runtime).
-- **Run locally:** `cp .env.example .env && docker compose up -d --build`, then open `http://127.0.0.1:8080`.
+- **What it is:** dirvex is a self-hosted Flask dashboard that visualizes Active Directory domain-controller health from a JSON status feed.
+- **Stack:** Python 3.11, Flask 3, Jinja2, PowerShell collectors (optional), Docker Compose.
+- **Run locally:** `cp .env.example .env && sg docker -c 'docker compose up -d --build'`, then open `http://127.0.0.1:5000`.
 - **Health check:** `GET /healthz` must return 200.
 
 ## Commands

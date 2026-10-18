@@ -1,5 +1,5 @@
 #!/bin/bash
-# ADSentinel Docker Entrypoint
+# dirvex Docker Entrypoint
 # Handles first-run setup and credential onboarding
 # Auto-generates defaults when running non-interactively (no TTY)
 
@@ -8,7 +8,7 @@ set -e
 # If .env doesn't exist, run setup wizard
 if [ ! -f /app/.env ]; then
     echo "============================================"
-    echo "  ADSentinel — First Run Setup"
+    echo "  dirvex — First Run Setup"
     echo "============================================"
     echo ""
     
@@ -62,5 +62,5 @@ fi
 # Source .env
 export $(grep -v '^#' /app/.env | xargs)
 
-echo "Starting ADSentinel..."
+echo "Starting dirvex..."
 exec "$@"
