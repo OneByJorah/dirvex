@@ -17,7 +17,8 @@ const RECORD = process.env.RECORD === "1";
 
 // Edit this list per project: one entry per meaningful screen.
 const PAGES = [
-  { name: "dashboard", path: "/", waitFor: "#app-ready" },
+  // "#app-ready" is a hidden marker span; wait for the real rendered title instead.
+  { name: "dashboard", path: "/", waitFor: "#page-title", state: "visible" },
   { name: "public", path: "/public" },
 ];
 
@@ -54,7 +55,7 @@ let failed = false;
 for (const p of PAGES) {
   const page = await context.newPage();
   await page.goto(new URL(p.path, BASE).toString(), { waitUntil: "networkidle" });
-  if (p.waitFor) await page.waitForSelector(p.waitFor, { state: "attached", timeout: 15000 });
+  if (p.waitFor) await page.waitForSelector(p.waitFor, { state: p.state || "attached", timeout: 15000 });
 
   const text = (await page.evaluate(() => document.body.innerText)) + "\n" + (await page.title());
   const hits = FORBIDDEN.filter((f) => f.re.test(text)).map((f) => f.label);
