@@ -107,11 +107,12 @@ jobs:
           git add "$OUT_DIR"
           if git diff --cached --quiet; then echo "No screenshot changes"; exit 0; fi
           git commit -m "docs: update screenshots"
-          git push --force-with-lease origin "$BRANCH"
-          if gh pr view "$BRANCH" >/dev/null 2>&1; then
+          git push --force origin "$BRANCH"  # bot branch is regenerated wholesale each run
+          if gh pr view "$BRANCH" --state OPEN >/dev/null 2>&1; then
             echo "PR already open for $BRANCH"
           else
             gh pr create --base "$DEFAULT_BRANCH" --head "$BRANCH" \
               --title "docs: update screenshots" \
-              --body "Automated screenshots captured from the demo stack. Review each image for real data before merging."
+              --body "Automated screenshots captured from the demo stack. Review each image for real data before merging." \
+              || echo "PR create skipped (already exists from a concurrent run) - success outcome"
           fi
