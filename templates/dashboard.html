@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DC Status Dashboard — Datacenter Monitoring</title>
+<title>Dashboard — dirvex</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: 'Space Grotesk', sans-serif; background: #080d1a; color: #e2e8f0; min-height: 100vh; overflow-x: hidden; }
@@ -74,14 +74,15 @@ body::-webkit-scrollbar-thumb { background: rgba(99,179,237,0.3); border-radius:
 </style>
 </head>
 <body>
+<span id="app-ready" hidden></span>
 <div class="container">
   <nav class="sidebar">
     <div class="logo">
       <div class="logo-mark">
         <div class="logo-icon">📡</div>
         <div>
-          <div class="logo-text">DC Status</div>
-          <div class="logo-sub">PRODUCTION READY</div>
+          <div class="logo-text">dirvex</div>
+          <div class="logo-sub">DC HEALTH DASHBOARD</div>
         </div>
       </div>
     </div>
@@ -105,8 +106,8 @@ body::-webkit-scrollbar-thumb { background: rgba(99,179,237,0.3); border-radius:
         <p id="page-sub">Loading...</p>
       </div>
       <div class="topbar-right">
-        <div class="pill"><div class="dot dot-green pulse"></div><span id="ext-ip">67.211.240.4</span></div>
-        <div class="pill" id="time-pill">--:--</div>
+        <div class="pill"><div class="dot dot-green pulse"></div><span id="ext-ip">203.0.113.4</span></div>
+        <div class="pill" id="time-pill">Demo Mode</div>
       </div>
     </div>
     <div id="page-overview" class="page active">
@@ -162,7 +163,7 @@ body::-webkit-scrollbar-thumb { background: rgba(99,179,237,0.3); border-radius:
             <span class="dc-icon">📡</span>
             <div class="dc-info">
               <div class="dc-name">DC-East</div>
-              <div class="dc-detail">192.168.1.0/24 — Primary</div>
+              <div class="dc-detail">203.0.113.0/24 — Primary</div>
             </div>
           </div>
           <div>
@@ -178,7 +179,7 @@ body::-webkit-scrollbar-thumb { background: rgba(99,179,237,0.3); border-radius:
             <span class="dc-icon">📡</span>
             <div class="dc-info">
               <div class="dc-name">DC-West</div>
-              <div class="dc-detail">192.168.2.0/24 — Secondary</div>
+              <div class="dc-detail">198.51.100.0/24 — Secondary</div>
             </div>
           </div>
           <div>
@@ -194,7 +195,7 @@ body::-webkit-scrollbar-thumb { background: rgba(99,179,237,0.3); border-radius:
             <span class="dc-icon">🏢</span>
             <div class="dc-info">
               <div class="dc-name">DC-Central</div>
-              <div class="dc-detail">192.168.3.0/24 — Backup</div>
+              <div class="dc-detail">203.0.113.128/25 — Backup</div>
             </div>
           </div>
           <div>
@@ -210,7 +211,7 @@ body::-webkit-scrollbar-thumb { background: rgba(99,179,237,0.3); border-radius:
             <span class="dc-icon">🏭</span>
             <div class="dc-info">
               <div class="dc-name">DC-Factory</div>
-              <div class="dc-detail">192.168.4.0/24 — Industrial</div>
+              <div class="dc-detail">198.51.100.128/25 — Industrial</div>
             </div>
           </div>
           <div>
