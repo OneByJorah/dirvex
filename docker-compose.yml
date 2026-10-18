@@ -1,29 +1,29 @@
 # =============================================================================
-# ADSentinel — docker-compose.yml
+# dirvex — docker-compose.yml
 # =============================================================================
 
 services:
-  adsentinel:
-    image: jorahone/adsentinel:latest
+  dirvex:
+    image: ghcr.io/onebyjorah/dirvex:latest
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: adsentinel
+    container_name: dirvex
     restart: unless-stopped
     ports:
-      - "5000:5000"
+      - "${HOST_PORT:-5000}:5000"
     volumes:
       # Mock DC status data (can be replaced with real data)
       - ./mock_dc_status.json:/app/mock_dc_status.json:ro
     environment:
       - FLASK_ENV=${FLASK_ENV:-production}
     networks:
-      - adsentinel_net
+      - dirvex_net
 
 volumes:
-  adsentinel_data:
+  dirvex_data:
     driver: local
 
 networks:
-  adsentinel_net:
+  dirvex_net:
     driver: bridge
