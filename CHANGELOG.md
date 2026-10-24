@@ -1,5 +1,20 @@
 # Changelog
 
+## Unreleased
+
+### Fixed
+
+- Replace static metrics and status claims with validated JSON feed data.
+- Reload on every request; report unknown for invalid or stale live feeds.
+- Fix failing apt pins with a digest-pinned, non-root image.
+- Bind Compose to localhost with read-only runtime permissions.
+
+### Added
+
+- J1 dashboard, demo labels, readiness endpoint and regression tests.
+- Enforced lint/test/Compose CI and locked screenshot tooling.
+
+
 ## [0.1.1](https://github.com/OneByJorah/dirvex/compare/v0.1.0...v0.1.1) (2026-10-18)
 
 

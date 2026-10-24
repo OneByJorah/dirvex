@@ -81,7 +81,7 @@ jobs:
         env:
           INSTALL_DEPS: ${{ inputs.install-deps }}
         run: |
-          npm install --no-save playwright
+          npm ci
           if [ "$INSTALL_DEPS" = "true" ]; then npx playwright install --with-deps chromium; else npx playwright install chromium; fi
 
       - name: Capture screenshots
@@ -103,11 +103,12 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git checkout -B "$BRANCH"
+          BRANCH="${BRANCH}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          git checkout -b "$BRANCH"
           git add "$OUT_DIR"
           if git diff --cached --quiet; then echo "No screenshot changes"; exit 0; fi
           git commit -m "docs: update screenshots"
-          git push --force origin "$BRANCH"  # bot branch is regenerated wholesale each run
+          git push origin "$BRANCH"
           if gh pr view "$BRANCH" --state OPEN >/dev/null 2>&1; then
             echo "PR already open for $BRANCH"
           else

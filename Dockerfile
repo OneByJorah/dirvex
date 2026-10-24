@@ -1,56 +1,20 @@
-# =============================================================================
-# dirvex — Production Dockerfile
-# python:3.11-slim base
-# Tag: ghcr.io/onebyjorah/dirvex:latest
-# =============================================================================
-
-FROM python:3.11-slim AS builder
-
+FROM python:3.13.17-slim-bookworm@sha256:e32be0e55814a08977501ca863271d9bd02443710db8f2afaf8372e2c4508530 AS builder
 WORKDIR /build
-
-# Install build dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    gcc=4:14.2.0-1 \
-    && rm -rf /var/lib/apt/lists/*
-
-# Copy and install Python dependencies
 COPY requirements.txt .
-RUN pip install --no-cache-dir --user -r requirements.txt
+RUN pip wheel --no-cache-dir --wheel-dir /wheels -r requirements.txt
 
-# ---- Runtime Stage ----
-FROM python:3.11-slim
-
-# Create non-root user
-RUN groupadd -r -g 10001 dirvex \
-    && useradd -r -u 10001 -g dirvex -d /app -s /sbin/nologin dirvex
-
-# Install runtime dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    ca-certificates=20250419 \
-    && rm -rf /var/lib/apt/lists/*
-
-# Copy installed packages from builder
-COPY --from=builder /root/.local /usr/local
-
-# Create application directory
-RUN mkdir -p /app
-
-# Copy application code
-COPY . /app
+FROM python:3.13.17-slim-bookworm@sha256:e32be0e55814a08977501ca863271d9bd02443710db8f2afaf8372e2c4508530
+ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
+RUN groupadd --gid 10001 dirvex && useradd --uid 10001 --gid 10001 --no-create-home dirvex
 WORKDIR /app
-
-# Set ownership
-RUN chown -R dirvex:dirvex /app
-
-# Switch to non-root user
-USER 10001
-
-# Expose application port
+COPY --from=builder /wheels /wheels
+COPY requirements.txt .
+RUN pip install --no-cache-dir --no-index --find-links=/wheels -r requirements.txt && rm -rf /wheels
+COPY --chown=10001:10001 app.py mock_dc_status.json ./
+COPY --chown=10001:10001 templates ./templates
+COPY --chown=10001:10001 static ./static
+USER 10001:10001
 EXPOSE 5000
-
-# Healthcheck — verify the app responds
-HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-    CMD ["python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000/')"]
-
-# Run with gunicorn (production WSGI server)
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "2", "--threads", "2", "--timeout", "60", "--access-logfile", "-", "--error-logfile", "-", "app:app"]
+HEALTHCHECK --interval=10s --timeout=3s --start-period=5s --retries=3 \
+    CMD ["python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:5000/healthz', timeout=2)"]
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "2", "--threads", "2", "--timeout", "30", "--worker-tmp-dir", "/tmp", "--access-logfile", "-", "--error-logfile", "-", "app:app"]

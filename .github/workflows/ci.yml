@@ -1,32 +1,53 @@
 name: CI
-
 on:
   push:
-    branches: [main, master]
+    branches: [main, upgrade/next-level]
   pull_request:
-
+permissions:
+  contents: read
 jobs:
-  lint-and-test:
+  quality:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
-
-      - name: Install dependencies
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: pip install -r requirements-dev.txt
+      - run: ruff check app.py tests
+      - run: ruff format --check app.py tests
+      - run: python -m pytest -q
+      - run: python -m compileall -q app.py
+      - run: npm ci
+      - run: npm run lint:docs
+      - name: Dockerfile lint
+        run: docker run --rm -i hadolint/hadolint:2.12.0 < Dockerfile
+      - name: Independent secret scan
+        run: docker run --rm -v "$PWD:/repo" zricethezav/gitleaks:v8.30.1 dir /repo --redact --no-banner --config /repo/scripts/gitleaks-default.toml
+  compose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - run: cp .env.example .env
+      - run: docker compose config -q
+      - run: docker compose up -d --build --wait --wait-timeout 90
+      - name: Smoke routes and container hardening
         run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install ruff pytest
-
-      - name: Lint
-        run: ruff check app.py || true
-
-      - name: Test
-        run: pytest || true
-
-      - name: Smoke import
-        run: python -c "from app import app; print('import ok')"
+          test "$(curl --fail --silent http://127.0.0.1:5000/healthz)" = ok
+          test "$(curl --fail --silent http://127.0.0.1:5000/readyz)" = Degraded
+          curl --fail --silent http://127.0.0.1:5000/ | grep 'DC-01'
+          test "$(docker compose exec -T dirvex id -u)" = 10001
+      - name: Logs and cleanup
+        if: always()
+        run: |
+          docker compose logs
+          docker compose down

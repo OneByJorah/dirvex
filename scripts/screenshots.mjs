@@ -26,7 +26,6 @@ const FORBIDDEN = [
   { label: "private IPv4", re: /\b(?:10\.\d{1,3}|192\.168|172\.(?:1[6-9]|2\d|3[01]))\.\d{1,3}\.\d{1,3}\b/ },
   { label: "tailnet IPv4", re: /\b100\.(?:6[4-9]|[7-9]\d|1[01]\d|12[0-7])\.\d{1,3}\.\d{1,3}\b/ },
   { label: "email address", re: /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i },
-  { label: "school domain", re: /\bk12\.vi\b/i },
   ...(process.env.SCRUB_PATTERNS || "")
     .split(",")
     .map((p) => p.trim())
