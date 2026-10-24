@@ -1,29 +1,25 @@
-# =============================================================================
-# dirvex — docker-compose.yml
-# =============================================================================
-
 services:
   dirvex:
-    image: ghcr.io/onebyjorah/dirvex:latest
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: dirvex
+    image: dirvex:local
+    build: .
     restart: unless-stopped
     ports:
-      - "${HOST_PORT:-5000}:5000"
-    volumes:
-      # Mock DC status data (can be replaced with real data)
-      - ./mock_dc_status.json:/app/mock_dc_status.json:ro
+      - "127.0.0.1:${HOST_PORT:-5000}:5000"
     environment:
-      - FLASK_ENV=${FLASK_ENV:-production}
-    networks:
-      - dirvex_net
-
-volumes:
-  dirvex_data:
-    driver: local
-
-networks:
-  dirvex_net:
-    driver: bridge
+      DEMO_MODE: ${DEMO_MODE:-true}
+      STATUS_PATH: /data/status.json
+      STALE_AFTER_SECONDS: ${STALE_AFTER_SECONDS:-900}
+    volumes:
+      - type: bind
+        source: ${STATUS_DIRECTORY:-./demo}
+        target: /data
+        read_only: true
+        bind:
+          create_host_path: false
+    read_only: true
+    tmpfs:
+      - /tmp:size=16777216,mode=1777
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 128

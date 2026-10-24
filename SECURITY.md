@@ -21,7 +21,11 @@ We will respond within 72 hours and coordinate disclosure.
 
 ## Security practices for self-hosters
 
-- Run services behind a reverse proxy (Caddy/Nginx) with TLS.
-- Keep Tailscale/WireGuard as the preferred exposure model.
+- Use Tailscale-only access; keep Compose on loopback.
+- Never publish /public to the internet, open inbound ports or use Tailscale Funnel.
 - Rotate secrets and API keys regularly.
 - Bind services to localhost unless a reverse proxy handles TLS.
+
+## Data boundary
+
+Use a dedicated read-only collector-output mount. Feed contents may identify infrastructure; keep them out of issues, screenshots and source control. Credentials belong in Passbolt and are not consumed by this app. Liveness does not certify feed readiness or AD health.

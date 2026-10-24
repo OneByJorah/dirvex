@@ -5,8 +5,8 @@ Instructions for AI coding agents (OpenCode, Freebuff/Codebuff, Hermes workers, 
 ## Project
 
 - **What it is:** dirvex is a self-hosted Flask dashboard that visualizes Active Directory domain-controller health from a JSON status feed.
-- **Stack:** Python 3.11, Flask 3, Jinja2, PowerShell collectors (optional), Docker Compose.
-- **Run locally:** `cp .env.example .env && sg docker -c 'docker compose up -d --build'`, then open `http://127.0.0.1:5000`.
+- **Stack:** Python 3.13, Flask 3, Jinja2, PowerShell collectors (optional), Docker Compose.
+- **Run locally:** `cp .env.example .env && docker compose up -d --build --wait`, then open `http://127.0.0.1:5000`.
 - **Health check:** `GET /healthz` must return 200.
 
 ## Commands
@@ -22,7 +22,7 @@ Instructions for AI coding agents (OpenCode, Freebuff/Codebuff, Hermes workers, 
 
 ## Rules
 
-1. Work on a branch named `agent/<task>`. Never push to `main`. Open a pull request.
+1. Work on a branch named `upgrade/next-level` or `feat/<task>`. Never push to `main`. Open a pull request.
 2. Commit messages use Conventional Commits (`feat:`, `fix:`, `docs:`, `chore:`).
 3. Never read, print, or commit secrets. Do not open `.env` files. Use `.env.example` for documentation.
 4. Bind services to `127.0.0.1`. Never publish ports to `0.0.0.0` in compose files.

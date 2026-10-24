@@ -1,0 +1,28 @@
+[
+  {
+    "Name": "DC-01",
+    "Replication": "Healthy",
+    "SYSVOL": "OK",
+    "LDAPBind": "Success",
+    "DHCPScope": "80% Used",
+    "Services": {
+      "DNS": "Running",
+      "DHCP": "Running",
+      "ADWS": "Stopped"
+    },
+    "LastChecked": "2026-10-18T12:00:00Z"
+  },
+  {
+    "Name": "DC-02",
+    "Replication": "Warning",
+    "SYSVOL": "OK",
+    "LDAPBind": "Success",
+    "DHCPScope": "50% Used",
+    "Services": {
+      "DNS": "Running",
+      "DHCP": "Stopped",
+      "ADWS": "Running"
+    },
+    "LastChecked": "2026-10-18T12:00:00Z"
+  }
+]
