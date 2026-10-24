@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>dirvex — read-only Active Directory health dashboard</title>
+<meta name="description" content="dirvex turns a collector status feed into one calm view of domain controller health: overall state, replication, SYSVOL, LDAP bind and per-service status. Self-hosted, read-only, Docker-first.">
+<meta property="og:title" content="dirvex — read-only Active Directory health dashboard">
+<meta property="og:description" content="One view of domain controller health from your collector feed. Self-hosted, read-only, Docker-first.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://onebyjorah.github.io/dirvex/screenshots/dashboard.png">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<style>
+:root{--bg:#0a0a09;--surface:#141412;--border:#26241f;--text:#ece8df;--muted:#8a8578;--amber:#ffb300;--ok:#4caf7a;--mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;--max:1040px}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--mono);font-size:15px;line-height:1.65;-webkit-font-smoothing:antialiased}
+a{color:var(--text);text-decoration:none}
+a:hover{color:var(--amber)}
+h1,h2,h3{line-height:1.2;letter-spacing:-.02em;margin:0}
+p{margin:0}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 24px}
+.eyebrow{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+header{position:sticky;top:0;z-index:20;background:rgba(10,10,9,.92);border-bottom:1px solid var(--border);backdrop-filter:blur(8px)}
+.nav{display:flex;align-items:center;justify-content:space-between;height:60px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700}
+.mark{width:26px;height:26px;border-radius:6px;background:var(--amber);color:#0a0a09;display:grid;place-items:center;font-size:14px;font-weight:700}
+.nav-links{display:flex;gap:22px;font-size:13px}
+.nav-links a{color:var(--muted)}
+.nav-links a:hover{color:var(--amber)}
+.hero{padding:72px 0 40px;border-bottom:1px solid var(--border)}
+.hero h1{font-size:clamp(28px,4.4vw,44px);max-width:22ch;margin:14px 0 18px}
+.hero h1 em{font-style:normal;color:var(--amber)}
+.hero .sub{color:var(--muted);max-width:64ch}
+.cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}
+.btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border);background:var(--surface);color:var(--text);padding:10px 16px;border-radius:6px;font:inherit;font-size:13px;cursor:pointer}
+.btn:hover{border-color:#3a362e}
+.btn-primary{background:var(--amber);border-color:var(--amber);color:#0a0a09;font-weight:700}
+.btn-primary:hover{background:#ffc233;color:#0a0a09}
+.trust{margin-top:18px;font-size:12px;color:var(--muted)}
+.trust span{color:var(--ok)}
+.shot{margin:36px 0 0;border:1px solid var(--border);border-radius:8px;overflow:hidden;background:#0d0d0b}
+.shot img{display:block;width:100%;height:auto}
+.shot figcaption{font-size:11px;color:var(--muted);padding:8px 12px;border-top:1px solid var(--border);background:var(--surface)}
+section{padding:56px 0;border-bottom:1px solid var(--border)}
+h2{font-size:22px;margin-bottom:8px}
+.lead{color:var(--muted);max-width:62ch}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:28px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:18px}
+.card h3{font-size:14px;margin-bottom:8px}
+.card p{font-size:13px;color:var(--muted)}
+.card .k{color:var(--amber);font-size:11px;letter-spacing:.12em;display:block;margin-bottom:8px}
+pre{background:#060605;border:1px solid var(--border);border-radius:8px;padding:16px;overflow:auto;font-size:12.5px;line-height:1.75;margin:14px 0 0}
+code{font-family:var(--mono)}
+.copy{position:relative}
+.copy button{position:absolute;top:8px;right:8px;font-size:11px;padding:5px 9px;border-radius:5px;border:1px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer}
+.copy button:hover{color:var(--amber);border-color:#3a362e}
+table{width:100%;border-collapse:collapse;margin-top:20px;font-size:13px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:top}
+th{color:var(--muted);font-weight:400;font-size:11px;letter-spacing:.1em;text-transform:uppercase}
+td code{color:var(--amber)}
+details{border-bottom:1px solid var(--border);padding:14px 0}
+summary{cursor:pointer;font-size:14px}
+summary::marker{color:var(--amber)}
+details p{margin-top:10px;color:var(--muted);font-size:13.5px;max-width:72ch}
+footer{padding:36px 0 60px;color:var(--muted);font-size:12px}
+.foot{display:flex;flex-wrap:wrap;gap:24px;justify-content:space-between}
+.foot-links{display:flex;gap:18px}
+.foot a{color:var(--muted)}
+.foot a:hover{color:var(--amber)}
+.note{margin-top:18px;padding-top:16px;border-top:1px solid var(--border);max-width:72ch;line-height:1.7}
+.pill{display:inline-block;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;padding:2px 8px;border-radius:10px;border:1px solid var(--border);color:var(--muted)}
+.pill.ok{color:var(--ok);border-color:#22402f}
+.pill.warn{color:var(--amber);border-color:#3d3116}
+@media (max-width:860px){.grid{grid-template-columns:1fr}.nav-links{display:none}.hero{padding-top:48px}}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="#top"><span class="mark">d</span> dirvex</a>
+    <nav class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#install">Install</a>
+      <a href="#compat">Compatibility</a>
+      <a href="#faq">FAQ</a>
+      <a href="https://github.com/OneByJorah/dirvex">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <div class="wrap hero">
+    <div class="eyebrow">Active Directory · read-only · self-hosted</div>
+    <h1>Know your domain controllers are healthy <em>before</em> someone asks.</h1>
+    <p class="sub">dirvex reads a collector status feed and renders one calm view: overall state, controller count, and per-controller replication, SYSVOL, LDAP bind, DHCP scope and service status. No agents on your DCs, no write access, no public listener.</p>
+    <div class="cta">
+      <a class="btn btn-primary" href="#install">Run it with Docker</a>
+      <a class="btn" href="https://github.com/OneByJorah/dirvex">View source</a>
+    </div>
+    <p class="trust"><span>&#10003;</span> Read-only by design &nbsp; <span>&#10003;</span> Collector-fed, no credentials &nbsp; <span>&#10003;</span> Loopback by default</p>
+
+    <figure class="shot">
+      <img src="screenshots/dashboard.png" width="1440" height="1060" alt="dirvex dashboard: overall state Degraded, two controllers, healthy and needs-review counters, and per-controller cards listing replication, SYSVOL, LDAP bind, DHCP scope and service status">
+      <figcaption>Capture of <code>/</code> running from the container against the synthetic feed.</figcaption>
+    </figure>
+  </div>
+
+  <section id="features">
+    <div class="wrap">
+      <h2>What one screen answers</h2>
+      <p class="lead">Counters and controller rows are computed from the feed on every request. No dot is green because a template said so.</p>
+      <div class="grid">
+        <div class="card">
+          <span class="k">01 · Overall</span>
+          <h3>State before detail</h3>
+          <p>Healthy, Degraded or Unknown, with controller count, healthy count and needs-review count above the fold.</p>
+        </div>
+        <div class="card">
+          <span class="k">02 · Per controller</span>
+          <h3>Replication to services</h3>
+          <p>Replication, SYSVOL, LDAP bind, DHCP scope and each service state, plus the timestamp the collector reported.</p>
+        </div>
+        <div class="card">
+          <span class="k">03 · Honesty</span>
+          <h3>Stale data is not green</h3>
+          <p>An unusable or stale feed reports Unknown and <code>/readyz</code> returns 503, so a monitor or load balancer sees the truth.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <h2>The shareable view</h2>
+      <p class="lead">A second route renders the same feed without the operator chrome — safe for a wall display or a status link.</p>
+      <figure class="shot">
+        <img src="screenshots/public.png" width="1440" height="900" alt="dirvex public status page summarising overall state and controller health" loading="lazy">
+        <figcaption><code>/public</code>, same feed, no operator-only detail.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section id="install">
+    <div class="wrap">
+      <h2>Install</h2>
+      <p class="lead">One service, one read-only feed directory. Compose builds the image locally; no registry credentials needed.</p>
+      <div class="copy">
+        <button type="button" data-copy="install">Copy</button>
+        <pre id="install"><code>git clone https://github.com/OneByJorah/dirvex.git
+cd dirvex
+cp .env.example .env
+docker compose up -d --build --wait</code></pre>
+      </div>
+      <div class="copy">
+        <button type="button" data-copy="verify">Copy</button>
+        <pre id="verify"><code>curl -fsS http://127.0.0.1:5000/healthz   # -> ok
+curl -fsS http://127.0.0.1:5000/readyz     # 200 + overall state, 503 when the feed is stale
+docker compose ps                          # -> healthy</code></pre>
+      </div>
+      <p class="trust">The demo reports <strong>Degraded</strong> on purpose: the synthetic feed contains stopped services. Replace <code>STATUS_DIRECTORY</code> with your collector output to see live data.</p>
+    </div>
+  </section>
+
+  <section id="compat">
+    <div class="wrap">
+      <h2>Compatibility</h2>
+      <table>
+        <thead><tr><th>Surface</th><th>Status</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td>Docker Compose v2</td><td><span class="pill ok">Supported</span></td><td>Image builds from <code>python:3.13-slim-bookworm</code>, runs as UID 10001, read-only root</td></tr>
+          <tr><td>Collector feed</td><td><span class="pill ok">Supported</span></td><td>JSON in <code>STATUS_DIRECTORY</code> (default <code>./demo</code>), mounted read-only at <code>/data</code></td></tr>
+          <tr><td>Public inbound port</td><td><span class="pill warn">Not supported</span></td><td>Binds <code>127.0.0.1</code>; expose it over Tailscale or an existing proxy</td></tr>
+          <tr><td>Windows / macOS package</td><td><span class="pill warn">Not applicable</span></td><td>Server-side dashboard: the supported artifact is the container</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="faq">
+    <div class="wrap">
+      <h2>FAQ</h2>
+      <details><summary>Does it need domain credentials?</summary><p>No. dirvex reads a JSON status file. Whatever credentials your collector uses stay with the collector.</p></details>
+      <details><summary>What happens when the feed stops updating?</summary><p>Records older than <code>STALE_AFTER_SECONDS</code> are treated as stale: the dashboard reports Unknown and <code>/readyz</code> returns 503 instead of showing a comfortable green.</p></details>
+      <details><summary>Is there a published container image or installer?</summary><p>No published image and no desktop installer is claimed here. Compose builds the image from this repository, which is the artifact that exists today.</p></details>
+      <details><summary>Does it store anything?</summary><p>Nothing. The feed is read per request; there is no database, no cache and no write path.</p></details>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot">
+      <div>
+        <div class="brand" style="margin-bottom:8px"><span class="mark">d</span> dirvex</div>
+        <div>Built by Jhonattan · JorahOne, LLC</div>
+      </div>
+      <div class="foot-links">
+        <a href="https://github.com/OneByJorah/dirvex">Source</a>
+        <a href="https://github.com/OneByJorah/dirvex/releases">Releases</a>
+        <a href="https://github.com/OneByJorah/dirvex/blob/main/SECURITY.md">Security</a>
+        <a href="https://github.com/OneByJorah/dirvex/blob/main/LICENSE">MIT licence</a>
+      </div>
+    </div>
+    <p class="note">dirvex is an independent project, not affiliated with, endorsed by, or sponsored by Microsoft. Active Directory is a trademark of Microsoft Corporation. The data in these screenshots is synthetic.</p>
+  </div>
+</footer>
+
+<script>
+document.querySelectorAll('.copy button').forEach(function (btn) {
+  btn.addEventListener('click', function () {
+    var src = document.getElementById(btn.dataset.copy);
+    if (!src) return;
+    navigator.clipboard.writeText(src.innerText).then(function () {
+      var old = btn.textContent;
+      btn.textContent = 'Copied';
+      setTimeout(function () { btn.textContent = old; }, 1500);
+    });
+  });
+});
+</script>
+</body>
+</html>

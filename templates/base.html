@@ -1,0 +1,8 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}dirvex{% endblock %}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}"></head>
+<body><a class="skip" href="#main">Skip to content</a>
+<header><a class="brand" href="/">J1 <span>/</span> dirvex</a><nav aria-label="Main"><a href="/">Controllers</a><a href="/public">Status summary</a></nav><span class="mode">{{ 'DEMO / synthetic feed' if demo else 'COLLECTOR / JSON feed' }}</span></header>
+<main id="main">{% block content %}{% endblock %}</main>
+<footer>Read-only AD health viewer · {{ 'Sample states; no domain connected' if demo else 'Collector-reported states; no active probes' }}</footer></body></html>

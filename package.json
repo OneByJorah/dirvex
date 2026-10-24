@@ -1,0 +1,15 @@
+{
+  "name": "dirvex-dev-tools",
+  "private": true,
+  "scripts": {
+    "screenshots": "node scripts/screenshots.mjs",
+    "lint:docs": "markdownlint-cli2 README.md CONTRIBUTING.md SECURITY.md ROADMAP.md docs/VERIFICATION.md"
+  },
+  "devDependencies": {
+    "playwright": "1.64.1",
+    "markdownlint-cli2": "0.24.0"
+  },
+  "overrides": {
+    "katex": "0.18.2"
+  }
+}

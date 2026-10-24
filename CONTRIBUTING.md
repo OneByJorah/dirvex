@@ -1,29 +1,13 @@
-# Contributing to OneByJorah projects
+# Contributing
 
-Thanks for taking the time to contribute! Every island in the JorahOne archipelago gets stronger with community help.
+Use a feature branch and open a PR. Keep changes focused and use synthetic data. Never attach operational feeds, credentials, real addresses or district/client identifiers.
 
-## How to contribute
+## Checks
 
-1. **Open an issue first** for bugs, features, or large refactors so we can align on direction.
-2. **Fork the repo** and create a feature branch (`git checkout -b feature/short-name`).
-3. **Keep changes focused** — one concern per pull request.
-4. **Write clear commit messages** in the imperative: `Add SNMP trap handler`, not `Added handler`.
-5. **Update docs** if your change affects usage, configuration, or architecture.
-6. **Test your change** locally before opening a PR.
+Follow the Docker quick start and development commands in [README.md](README.md). Run Ruff, pytest and npm run lint:docs. CI also builds and starts Compose and scans for secrets.
 
-## Pull request checklist
+Add regression tests for feed validation, aggregation and freshness changes. Preserve localhost publishing, demo labels, escaping and the fail-closed Unknown state.
 
-- [ ] Branch is up to date with the default branch.
-- [ ] README/screenshots are updated if the UI or install steps changed.
-- [ ] No secrets, credentials, or private IPs are committed.
-- [ ] License header is preserved on new source files (MIT).
+For UI changes, capture the running demo and inspect desktop and mobile widths. No mockups or production data in screenshots.
 
-## Code style
-
-- Python: PEP 8, type hints where helpful.
-- JavaScript/TypeScript: consistent formatting, `const`/`let`, async/await over callbacks.
-- Shell/PowerShell: defensive execution, clear parameter comments.
-
-## Questions?
-
-Open a [Discussion](https://github.com/OneByJorah/OneByJorah/discussions) or reach out at <info@jorahone.com>.
+PRs should describe the problem, behavior change, commands run and remaining limitations. Maintainers approve merges and releases. See [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
