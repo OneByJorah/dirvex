@@ -11,12 +11,18 @@ services:
     container_name: dirvex
     restart: unless-stopped
     ports:
-      - "${HOST_PORT:-5000}:5000"
+      - "127.0.0.1:${HOST_PORT:-5000}:5000"
     volumes:
       # Mock DC status data (can be replaced with real data)
       - ./mock_dc_status.json:/app/mock_dc_status.json:ro
     environment:
       - FLASK_ENV=${FLASK_ENV:-production}
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    tmpfs:
+      - /tmp
     networks:
       - dirvex_net
 
