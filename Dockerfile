@@ -26,7 +26,7 @@ RUN groupadd -r -g 10001 dirvex \
 
 # Install runtime dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    ca-certificates=20250419 \
+    ca-certificates=20250419* \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy installed packages from builder
